@@ -1,3 +1,4 @@
+Note: This package is a fork from https://github.com/ajith-ab/react-native-receive-sharing-intent.
 # react-native-receive-sharing-intent
 
 A React Native plugin that enables React Native apps to receive sharing photos, videos, text, urls or any other file types from another app.
@@ -6,8 +7,8 @@ Also, supports iOS Share extension and launching the host app automatically. Che
 
 ## Demo
 
-| Android | Ios | 
-| :---: | :---: | 
+| Android | Ios |
+| :---: | :---: |
 | <img height="400" src="https://raw.githubusercontent.com/ajith-ab/react-native-receive-sharing-intent/master/doc/android.gif" />| <img height="400"  src="https://raw.githubusercontent.com/ajith-ab/react-native-receive-sharing-intent/master/doc/ios.gif" /> |
 
 
@@ -46,12 +47,12 @@ Note: `Ios and Android on Debbuging time not working at sometimes while App is C
     ....
     <!--TODO Add this Line  -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-  
+
       <application .... >
             <activity
               ....
               android:launchMode="singleTask"> <!--TODO IMPORTANT.set launchMode -> singleTask Recommended -->
-              
+
             .....
           <intent-filter>
               <action android:name="android.intent.action.VIEW" />
@@ -107,17 +108,17 @@ Note: `Ios and Android on Debbuging time not working at sometimes while App is C
               <category android:name="android.intent.category.DEFAULT" />
               <data android:mimeType="*/*" />
           </intent-filter>
-              
+
              .....
-              
+
        </activity>
-        
+
      </application>
 
-</manifest>    
+</manifest>
 ```
 
-- On MainActivity on your react-native app 
+- On MainActivity on your react-native app
 ` <Project_folder>/android/app/src/main/java/com/YOUR_APP/MainActivity.java` :
 
 ```java
@@ -151,7 +152,7 @@ public void onNewIntent(Intent intent) {
 ```xml
 <plist version="1.0">
 <dict>
-  
+
   .....
 
 <key>CFBundleURLTypes</key>
@@ -171,11 +172,11 @@ public void onNewIntent(Intent intent) {
   <string>
       To upload photos, please allow permission to access your photo library.
   </string>
-  
+
   ....
-  
+
 </dict>
-</plist>  
+</plist>
 ```
 
 `<project_folder>/ios/<project_name>/AppDelegate.m`
@@ -220,9 +221,9 @@ public void onNewIntent(Intent intent) {
 
   - Using xcode, go to File/New/Target and Choose "Share Extension"
   - Give it a name you want to show on while Sharing i.e. i Choose "Example Share"
- 
-  `<project_folder>/ios/<Your Share Extension Name>/info.plist` 
-  
+
+  `<project_folder>/ios/<Your Share Extension Name>/info.plist`
+
   ```xml
 <plist version="1.0">
 <dict>
@@ -263,13 +264,13 @@ public void onNewIntent(Intent intent) {
       <key>NSExtensionPointIdentifier</key>
       <string>com.apple.share-services</string>
     </dict>
-  
+
  </dict>
 </plist>
 
 ```
 `<project_folder>/ios/<Your Share Extension Name>/ShareViewController.swift`
- - <b> Note: Important </b> change the `hostAppBundleIdentifier` value to your main host app bundle identifier (example in my case: `com.ajith.example` ) in this `ShareViewController.swift` 
+ - <b> Note: Important </b> change the `hostAppBundleIdentifier` value to your main host app bundle identifier (example in my case: `com.ajith.example` ) in this `ShareViewController.swift`
 
 ```swift
 
@@ -297,7 +298,7 @@ class ShareViewController: SLComposeServiceViewController {
   let textContentType = kUTTypeText as String
   let urlContentType = kUTTypeURL as String
   let fileURLType = kUTTypeFileURL as String;
-  
+
   override func isContentValid() -> Bool {
     return true
   }
@@ -327,14 +328,14 @@ class ShareViewController: SLComposeServiceViewController {
     // To add configuration options via table cells at the bottom of the sheet, return an array of SLComposeSheetConfigurationItem here.
     return []
   }
-  
+
   private func handleText (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
     attachment.loadItem(forTypeIdentifier: textContentType, options: nil) { [weak self] data, error in
-      
+
       if error == nil, let item = data as? String, let this = self {
-        
+
         this.sharedText.append(item)
-        
+
         // If this is the last item, save imagesData in userDefaults and redirect to host app
         if index == (content.attachments?.count)! - 1 {
           let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
@@ -342,20 +343,20 @@ class ShareViewController: SLComposeServiceViewController {
           userDefaults?.synchronize()
           this.redirectToHostApp(type: .text)
         }
-        
+
       } else {
         self?.dismissWithError()
       }
     }
   }
-  
+
   private func handleUrl (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
     attachment.loadItem(forTypeIdentifier: urlContentType, options: nil) { [weak self] data, error in
-      
+
       if error == nil, let item = data as? URL, let this = self {
-        
+
         this.sharedText.append(item.absoluteString)
-        
+
         // If this is the last item, save imagesData in userDefaults and redirect to host app
         if index == (content.attachments?.count)! - 1 {
           let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
@@ -363,16 +364,16 @@ class ShareViewController: SLComposeServiceViewController {
           userDefaults?.synchronize()
           this.redirectToHostApp(type: .text)
         }
-        
+
       } else {
         self?.dismissWithError()
       }
     }
   }
-  
+
   private func handleImages (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
     attachment.loadItem(forTypeIdentifier: imageContentType, options: nil) { [weak self] data, error in
-      
+
       if error == nil, let url = data as? URL, let this = self {
         //  this.redirectToHostApp(type: .media)
         // Always copy
@@ -385,7 +386,7 @@ class ShareViewController: SLComposeServiceViewController {
         if(copied) {
           this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .image))
         }
-        
+
         // If this is the last item, save imagesData in userDefaults and redirect to host app
         if index == (content.attachments?.count)! - 1 {
           let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
@@ -393,18 +394,18 @@ class ShareViewController: SLComposeServiceViewController {
           userDefaults?.synchronize()
           this.redirectToHostApp(type: .media)
         }
-        
+
       } else {
         self?.dismissWithError()
       }
     }
   }
-  
+
   private func handleVideos (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
     attachment.loadItem(forTypeIdentifier: videoContentType, options:nil) { [weak self] data, error in
-      
+
       if error == nil, let url = data as? URL, let this = self {
-        
+
         // Always copy
         let fileExtension = this.getExtension(from: url, type: .video)
         let newName = UUID().uuidString
@@ -426,18 +427,18 @@ class ShareViewController: SLComposeServiceViewController {
           userDefaults?.synchronize()
           this.redirectToHostApp(type: .media)
         }
-        
+
       } else {
         self?.dismissWithError()
       }
     }
   }
-  
+
   private func handleFiles (content: NSExtensionItem, attachment: NSItemProvider, index: Int) {
     attachment.loadItem(forTypeIdentifier: fileURLType, options: nil) { [weak self] data, error in
-      
+
       if error == nil, let url = data as? URL, let this = self {
-        
+
         // Always copy
         let newName = this.getFileName(from :url)
         let newPath = FileManager.default
@@ -447,38 +448,38 @@ class ShareViewController: SLComposeServiceViewController {
         if (copied) {
           this.sharedMedia.append(SharedMediaFile(path: newPath.absoluteString, thumbnail: nil, duration: nil, type: .file))
         }
-        
+
         if index == (content.attachments?.count)! - 1 {
           let userDefaults = UserDefaults(suiteName: "group.\(this.hostAppBundleIdentifier)")
           userDefaults?.set(this.toData(data: this.sharedMedia), forKey: this.sharedKey)
           userDefaults?.synchronize()
           this.redirectToHostApp(type: .file)
         }
-        
+
       } else {
         self?.dismissWithError()
       }
     }
   }
-  
+
   private func dismissWithError() {
     print("[ERROR] Error loading data!")
     let alert = UIAlertController(title: "Error", message: "Error loading data", preferredStyle: .alert)
-    
+
     let action = UIAlertAction(title: "Error", style: .cancel) { _ in
       self.dismiss(animated: true, completion: nil)
     }
-    
+
     alert.addAction(action)
     present(alert, animated: true, completion: nil)
     extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
   }
-  
+
   private func redirectToHostApp(type: RedirectType) {
     let url = URL(string: "ShareMedia://dataUrl=\(sharedKey)#\(type)")
     var responder = self as UIResponder?
     let selectorOpenURL = sel_registerName("openURL:")
-    
+
     while (responder != nil) {
       if (responder?.responds(to: selectorOpenURL))! {
         let _ = responder?.perform(selectorOpenURL, with: url)
@@ -487,20 +488,20 @@ class ShareViewController: SLComposeServiceViewController {
     }
     extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
   }
-  
+
   enum RedirectType {
     case media
     case text
     case file
   }
-  
+
   func getExtension(from url: URL, type: SharedMediaType) -> String {
     let parts = url.lastPathComponent.components(separatedBy: ".")
     var ex: String? = nil
     if (parts.count > 1) {
       ex = parts.last
     }
-    
+
     if (ex == nil) {
       switch type {
       case .image:
@@ -513,17 +514,17 @@ class ShareViewController: SLComposeServiceViewController {
     }
     return ex ?? "Unknown"
   }
-  
+
   func getFileName(from url: URL) -> String {
     var name = url.lastPathComponent
-    
+
     if (name == "") {
       name = UUID().uuidString + "." + getExtension(from: url, type: .file)
     }
-    
+
     return name
   }
-  
+
   func copyFile(at srcURL: URL, to dstURL: URL) -> Bool {
     do {
       if FileManager.default.fileExists(atPath: dstURL.path) {
@@ -536,16 +537,16 @@ class ShareViewController: SLComposeServiceViewController {
     }
     return true
   }
-  
+
   private func getSharedMediaFile(forVideo: URL) -> SharedMediaFile? {
     let asset = AVAsset(url: forVideo)
     let duration = (CMTimeGetSeconds(asset.duration) * 1000).rounded()
     let thumbnailPath = getThumbnailPath(for: forVideo)
-    
+
     if FileManager.default.fileExists(atPath: thumbnailPath.path) {
       return SharedMediaFile(path: forVideo.absoluteString, thumbnail: thumbnailPath.absoluteString, duration: duration, type: .video)
     }
-    
+
     var saved = false
     let assetImgGenerate = AVAssetImageGenerator(asset: asset)
     assetImgGenerate.appliesPreferredTrackTransform = true
@@ -558,11 +559,11 @@ class ShareViewController: SLComposeServiceViewController {
     } catch {
       saved = false
     }
-    
+
     return saved ? SharedMediaFile(path: forVideo.absoluteString, thumbnail: thumbnailPath.absoluteString, duration: duration, type: .video) : nil
-    
+
   }
-  
+
   private func getThumbnailPath(for url: URL) -> URL {
     let fileName = Data(url.lastPathComponent.utf8).base64EncodedString().replacingOccurrences(of: "==", with: "")
     let path = FileManager.default
@@ -570,33 +571,33 @@ class ShareViewController: SLComposeServiceViewController {
       .appendingPathComponent("\(fileName).jpg")
     return path
   }
-  
+
   class SharedMediaFile: Codable {
     var path: String; // can be image, video or url path. It can also be text content
     var thumbnail: String?; // video thumbnail
     var duration: Double?; // video duration in milliseconds
     var type: SharedMediaType;
-    
-    
+
+
     init(path: String, thumbnail: String?, duration: Double?, type: SharedMediaType) {
       self.path = path
       self.thumbnail = thumbnail
       self.duration = duration
       self.type = type
     }
-    
+
     // Debug method to print out SharedMediaFile details in the console
     func toString() {
       print("[SharedMediaFile] \n\tpath: \(self.path)\n\tthumbnail: \(self.thumbnail)\n\tduration: \(self.duration)\n\ttype: \(self.type)")
     }
   }
-  
+
   enum SharedMediaType: Int, Codable {
     case image
     case video
     case file
   }
-  
+
   func toData(data: [SharedMediaFile]) -> Data {
     let encodedData = try? JSONEncoder().encode(data)
     return encodedData!
@@ -645,15 +646,15 @@ import ReceiveSharingIntent from 'react-native-receive-sharing-intent';
     ReceiveSharingIntent.getReceivedFiles(files => {
       // files returns as JSON Array example
       //[{ filePath: null, text: null, weblink: null, mimeType: null, contentUri: null, fileName: null, extension: null }]
-    }, 
+    },
     (error) =>{
       console.log(error);
     });
-    
-    
+
+
     // To clear Intents
     ReceiveSharingIntent.clearReceivedFiles();
-    
+
 ```
 
 

@@ -6,18 +6,18 @@ const { ReceiveSharingIntent } = NativeModules;
 const isIos = Platform.OS === 'ios';
 
 export default class ReceiveSharingIntentModule {
-    
-    static getReceivedFiles = (handler, errorHandler) => {
+
+    static getReceivedFiles = (handler, errorHandler, appBaseUrl = 'ShareMedia') => {
         if (isIos) {
             Linking.getInitialURL().then(res => {
-                if (res && res.startsWith("ShareMedia://dataUrl")) {
+                if (res && res.startsWith(`${appBaseUrl}://dataUrl`)) {
                     this.getFileNames(handler, errorHandler, res);
                 }
             }).catch(e => { });
             Linking.addEventListener("url", (res) => {
                 console.log(res);
                 let url = res ? res.url : "";
-                if (url.startsWith("ShareMedia://dataUrl")) {
+                if (url.startsWith(`${appBaseUrl}://dataUrl`)) {
                     this.getFileNames(handler,errorHandler, res.url);
                 }
             });
@@ -34,7 +34,7 @@ export default class ReceiveSharingIntentModule {
 
     static getFileNames = (handler,errorHandler, url) => {
         if(isIos){
-        ReceiveSharingIntent.getFileNames(url).then(data=>{         
+        ReceiveSharingIntent.getFileNames(url).then(data=>{
              let files = iosSortedData(data);
              handler(files);
         }).catch(e=>errorHandler(e));
